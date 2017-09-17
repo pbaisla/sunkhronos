@@ -39,26 +39,33 @@ class FSManager():
         with open(self.snapshot_path, 'wb') as snapshot_file:
             pickle.dump(snapshot, snapshot_file)
 
-    def createDirectory(self, path):
+    @staticmethod
+    def createDirectory(path):
         os.makedirs(path, exist_ok=True)
 
-    def deleteDirectory(self, path):
+    @staticmethod
+    def deleteDirectory(path):
         os.rmdir(path)
 
-    def moveDirectory(self, src_path, dest_path):
+    @staticmethod
+    def moveDirectory(src_path, dest_path):
         os.renames(src_path, dest_path)
 
-    def deleteFile(self, path):
+    @staticmethod
+    def deleteFile(path):
         os.remove(path)
 
-    def moveFile(self, src_path, dest_path):
+    @staticmethod
+    def moveFile(src_path, dest_path):
         os.renames(src_path, dest_path)
 
-    def readFile(self, path):
+    @staticmethod
+    def readFile(path):
         with open(path, 'r') as f:
             return f.read()
 
-    def writeFile(self, path, contents):
+    @staticmethod
+    def writeFile(path, contents):
         with open(path, 'w') as f:
             f.write(contents)
 
