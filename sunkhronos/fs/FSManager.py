@@ -69,3 +69,10 @@ class FSManager():
         with open(path, 'w') as f:
             f.write(contents)
 
+    @staticmethod
+    def getFileContents(files):
+        data = {}
+        for filename in files:
+            data[filename] = FSManager.readFile(filename)
+        return data
+
