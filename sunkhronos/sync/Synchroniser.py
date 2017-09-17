@@ -126,8 +126,23 @@ class Synchroniser():
     def getRequiredFiles(self, actions):
         files = []
         for action in actions:
-            print(action)
             if action[0] in ['create', 'move']:
                 files.append(action[1])
         return files
+
+    @staticmethod
+    def synchronise(actions, data):
+        for action in actions:
+            if action[0] == 'create':
+                FSManager.writeFile(action[1], data[action[1]])
+            elif action[0] == 'delete':
+                FSManager.deleteFile(action[1])
+            elif action[0] == 'move':
+                FSManager.moveFile(action[1], action[2])
+            elif action[0] == 'create_dir':
+                FSManager.createDirectory(action[1])
+            elif action[0] == 'delete_dir':
+                FSManager.deleteDirectory(action[1])
+            elif action[0] == 'move_dir':
+                FSManager.moveDirectory(action[1], action[2])
 
