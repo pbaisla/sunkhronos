@@ -16,7 +16,9 @@ class Synchroniser():
             ownActions, theirActions = zip(*actions)
         else:
             ownActions, theirActions = [], []
-        return (ownActions, theirActions)
+        flattenedOwnActions = [action for ownActionList in ownActions for action in ownActionList]
+        flattenedTheirActions = [action for theirActionList in theirActions for action in theirActionList]
+        return (flattenedOwnActions, flattenedTheirActions)
 
     def getFileDeleteActions(self):
         ownActions = []
