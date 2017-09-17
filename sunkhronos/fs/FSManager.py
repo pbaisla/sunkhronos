@@ -2,7 +2,7 @@ import os
 import pickle
 
 from os.path import abspath
-from watchdog.utils.dirsnapshot import DirectorySnapshotDiff, DirectorySnapshotDiff
+from watchdog.utils.dirsnapshot import DirectorySnapshot, DirectorySnapshotDiff
 
 
 class FSManager():
@@ -28,7 +28,7 @@ class FSManager():
 
     def getLastSyncSnapshot(self):
         try:
-            with open(snapshot_path, 'rb') as snapshot_file:
+            with open(self.snapshot_path, 'rb') as snapshot_file:
                 snapshot = pickle.load(snapshot_file)
         except FileNotFoundError:
             snapshot = DirectorySnapshot('.', listdir=lambda _: [])
