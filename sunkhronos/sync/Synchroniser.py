@@ -123,11 +123,10 @@ class Synchroniser():
     def getModifyActions(self):
         return ([], [])
 
-    def getRequiredData(self, actions):
+    def getRequiredData(self, files):
         data = {}
-        for action in actions:
-            if action[0] in ['create', 'move']:
-                data[action[1]] = FSManager.readFile(action[1])
+        for filename in files:
+            data[filename = FSManager.readFile(filename)
         return data
 
     def getRequiredFiles(self, actions):
