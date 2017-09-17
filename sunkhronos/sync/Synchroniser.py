@@ -1,3 +1,5 @@
+from sunkhronos.fs.FSManager import FSManager
+
 class Synchroniser():
     def __init__(self, ownChanges, theirChanges):
         self.ownChanges = ownChanges
@@ -121,9 +123,18 @@ class Synchroniser():
     def getModifyActions(self):
         return ([], [])
 
-    def getRequiredData(self, changes):
-        pass
+    def getRequiredData(self, actions):
+        data = {}
+        for action in actions:
+            if action[0] in ['create', 'move']:
+                data[action[1]] = FSManager.readFile(action[1])
+        return data
 
-    def getRequiredFiles(self, changes):
-        pass
+    def getRequiredFiles(self, actions):
+        files = []
+        for action in actions:
+            print(action)
+            if action[0] in ['create', 'move']:
+                files.append(action[1])
+        return files
 
