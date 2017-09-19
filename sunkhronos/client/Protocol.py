@@ -1,4 +1,3 @@
-from sunkhronos.fs.FSManager import FSManager
 from sunkhronos.sync.Synchroniser import Synchroniser
 from twisted.internet.error import ConnectionDone
 from twisted.internet.protocol import Protocol
@@ -21,7 +20,7 @@ class SyncProtocol(Protocol):
 
     def connectionLost(self, reason):
         if reason.check(ConnectionDone):
-            Synchroniser.synchronise(self.actions, self.data)
+            Synchroniser.synchronise(self.actions, self.data, self.factory.fs_manager)
 
     def dataReceived(self, data):
         response = {
@@ -49,7 +48,7 @@ class SyncProtocol(Protocol):
     def handleActions(self, actions, data, files):
         self.actions = actions
         self.data = data
-        theirRequiredData = FSManager.getFileContents(files)
+        theirRequiredData = self.factory.fs_manager.getFileContents(files)
         response = {
             "type": "data",
             "data": theirRequiredData

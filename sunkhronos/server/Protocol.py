@@ -13,7 +13,7 @@ class SyncProtocol(Protocol):
 
     def connectionLost(self, reason):
         if reason.check(ConnectionDone):
-            Synchroniser.synchronise(self.actions, self.data)
+            Synchroniser.synchronise(self.actions, self.data, self.factory.fs_manager)
 
     def dataReceived(self, data):
         response = {
@@ -45,8 +45,8 @@ class SyncProtocol(Protocol):
         ownActions, theirActions = self.synchroniser.getActions()
         ownRequiredFiles = self.synchroniser.getRequiredFiles(ownActions)
         theirRequiredFiles = self.synchroniser.getRequiredFiles(theirActions)
-        theirRequiredData = FSManager.getFileContents(theirRequiredFiles)
-        self.ownActions = ownActions
+        theirRequiredData = self.factory.fs_manager.getFileContents(theirRequiredFiles)
+        self.actions = ownActions
         response = {
             "type": "actions",
             "actions": theirActions,

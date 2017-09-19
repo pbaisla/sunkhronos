@@ -1,7 +1,7 @@
 import os
 import pickle
 
-from os.path import abspath
+from os.path import abspath, join, relpath
 from watchdog.utils.dirsnapshot import DirectorySnapshot, DirectorySnapshotDiff
 
 
@@ -18,12 +18,15 @@ class FSManager():
         return self.getDictFromDiff(diff)
 
     def getCurrentSnapshot(self):
-        return DirectorySnapshot('.', listdir=self.listdir)
+        return DirectorySnapshot(self.dir_path, listdir=self.listdir)
 
     def getDictFromDiff(self, diff):
         diff_dict = {}
         for key, value in diff.__dict__.items():
-            diff_dict[key[1:]] = value
+            if key == '_dirs_moved' or key == '_files_moved':
+                diff_dict[key[1:]] = list(map(lambda p1, p2: (relpath(p1, self.dir_path), relpath(p2, self.dir_path)), value))
+            else:
+                diff_dict[key[1:]] = list(map(lambda p: relpath(p, self.dir_path), value))
         return diff_dict
 
     def getLastSyncSnapshot(self):
@@ -31,48 +34,40 @@ class FSManager():
             with open(self.snapshot_path, 'rb') as snapshot_file:
                 snapshot = pickle.load(snapshot_file)
         except FileNotFoundError:
-            snapshot = DirectorySnapshot('.', listdir=lambda _: [])
+            snapshot = DirectorySnapshot(self.dir_path, listdir=lambda _: [])
         return snapshot
 
     def writeSnapshot(self):
-        snapshot = DirectorySnapshot('.', listdir=self.listdir)
+        snapshot = DirectorySnapshot(self.dir_path, listdir=self.listdir)
         with open(self.snapshot_path, 'wb') as snapshot_file:
             pickle.dump(snapshot, snapshot_file)
 
-    @staticmethod
-    def createDirectory(path):
-        os.makedirs(path, exist_ok=True)
+    def createDirectory(self, path):
+        os.makedirs(relpath(path, self.dir_path), exist_ok=True)
 
-    @staticmethod
-    def deleteDirectory(path):
-        os.rmdir(path)
+    def deleteDirectory(self, path):
+        os.rmdir(relpath(path, self.dir_path))
 
-    @staticmethod
-    def moveDirectory(src_path, dest_path):
-        os.renames(src_path, dest_path)
+    def moveDirectory(self, src_path, dest_path):
+        os.renames(relpath(src_path, self.dir_path), relpath(dest_path, self.dir_path))
 
-    @staticmethod
-    def deleteFile(path):
-        os.remove(path)
+    def deleteFile(self, path):
+        os.remove(relpath(path, self.dir_path))
 
-    @staticmethod
-    def moveFile(src_path, dest_path):
-        os.renames(src_path, dest_path)
+    def moveFile(self, src_path, dest_path):
+        os.renames(relpath(src_path, self.dir_path), relpath(dest_path, self.dir_path))
 
-    @staticmethod
-    def readFile(path):
-        with open(path, 'r') as f:
+    def readFile(self, path):
+        with open(relpath(path, self.dir_path), 'r') as f:
             return f.read()
 
-    @staticmethod
-    def writeFile(path, contents):
-        with open(path, 'w') as f:
+    def writeFile(self, path, contents):
+        with open(relpath(path, self.dir_path), 'w') as f:
             f.write(contents)
 
-    @staticmethod
-    def getFileContents(files):
+    def getFileContents(self, files):
         data = {}
         for filename in files:
-            data[filename] = FSManager.readFile(filename)
+            data[filename] = self.readFile(filename)
         return data
 
