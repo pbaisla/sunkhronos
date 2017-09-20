@@ -1,15 +1,15 @@
 import os
 import pickle
 
-from os.path import abspath, join, relpath
+from os.path import basename, join, normpath, relpath
 from watchdog.utils.dirsnapshot import DirectorySnapshot, DirectorySnapshotDiff
 
 
 class FSManager():
-    def __init__(self, dir_path, snapshot_path):
+    def __init__(self, dir_path, backup_path):
         self.dir_path = dir_path
-        self.snapshot_path = snapshot_path
-        self.listdir = lambda path: [p for p in os.listdir(path) if p != abspath(snapshot_path)]
+        self.backup_path = backup_path
+        self.listdir = lambda path: [p for p in os.listdir(path) if p != basename(normpath(backup_path))]
 
     def getChangesSinceLastSync(self):
         old = self.getLastSyncSnapshot()
@@ -31,15 +31,16 @@ class FSManager():
 
     def getLastSyncSnapshot(self):
         try:
-            with open(self.snapshot_path, 'rb') as snapshot_file:
+            with open(path.join(self.backup_path, '.snapshot'), 'rb') as snapshot_file:
                 snapshot = pickle.load(snapshot_file)
         except FileNotFoundError:
             snapshot = DirectorySnapshot(self.dir_path, listdir=lambda _: [])
         return snapshot
 
-    def writeSnapshot(self):
+    def updateLastSyncState(self):
         snapshot = DirectorySnapshot(self.dir_path, listdir=self.listdir)
-        with open(self.snapshot_path, 'wb') as snapshot_file:
+        self.createDirectory(self.backup_path)
+        with open(path.join(self.backup_path, '.snapshot'), 'wb') as snapshot_file:
             pickle.dump(snapshot, snapshot_file)
 
     def createDirectory(self, path):
