@@ -2,6 +2,7 @@ import os
 import pickle
 import shutil
 
+from itertools import starmap
 from os.path import basename, join, normpath, relpath
 from watchdog.utils.dirsnapshot import DirectorySnapshot, DirectorySnapshotDiff
 
@@ -25,7 +26,7 @@ class FSManager():
         diff_dict = {}
         for key, value in diff.__dict__.items():
             if key == '_dirs_moved' or key == '_files_moved':
-                diff_dict[key[1:]] = list(map(lambda p1, p2: (relpath(p1, self.dir_path), relpath(p2, self.dir_path)), value))
+                diff_dict[key[1:]] = list(starmap(lambda p1, p2: (relpath(p1, self.dir_path), relpath(p2, self.dir_path)), value))
             else:
                 diff_dict[key[1:]] = list(map(lambda p: relpath(p, self.dir_path), value))
         return diff_dict

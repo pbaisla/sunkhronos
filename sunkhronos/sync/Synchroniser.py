@@ -124,8 +124,10 @@ class Synchroniser():
     def getRequiredFiles(self, actions):
         files = []
         for action in actions:
-            if action[0] in ['create', 'move']:
+            if action[0] == 'create':
                 files.append(action[1])
+            elif action[0] == 'move':
+                files.append(action[1][0])
         return files
 
     @staticmethod
@@ -136,11 +138,11 @@ class Synchroniser():
             elif action[0] == 'delete':
                 fsManager.deleteFile(action[1])
             elif action[0] == 'move':
-                fsManager.moveFile(action[1], action[2])
+                fsManager.moveFile(action[1][0], action[1][1])
             elif action[0] == 'create_dir':
                 fsManager.createDirectory(action[1])
             elif action[0] == 'delete_dir':
                 fsManager.deleteDirectory(action[1])
             elif action[0] == 'move_dir':
-                fsManager.moveDirectory(action[1], action[2])
+                fsManager.moveDirectory(action[1][0], action[1][1])
 
