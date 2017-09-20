@@ -21,6 +21,7 @@ class SyncProtocol(Protocol):
     def connectionLost(self, reason):
         if reason.check(ConnectionDone):
             Synchroniser.synchronise(self.actions, self.data, self.factory.fs_manager)
+            self.factory.fs_manager.updateLastSyncState()
 
     def dataReceived(self, data):
         response = {

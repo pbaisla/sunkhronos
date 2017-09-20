@@ -32,7 +32,7 @@ class FSManager():
 
     def getLastSyncSnapshot(self):
         try:
-            with open(path.join(self.backup_path, '.snapshot'), 'rb') as snapshot_file:
+            with open(join(self.backup_path, '.snapshot'), 'rb') as snapshot_file:
                 snapshot = pickle.load(snapshot_file)
         except FileNotFoundError:
             snapshot = DirectorySnapshot(self.dir_path, listdir=lambda _: [])
@@ -40,9 +40,12 @@ class FSManager():
 
     def updateLastSyncState(self):
         snapshot = DirectorySnapshot(self.dir_path, listdir=self.listdir)
-        self.deleteDirectory(self.backup_path)
+        try:
+            self.deleteDirectory(self.backup_path)
+        except FileNotFoundError:
+            pass
         self.copyDirectory(self.dir_path, self.backup_path)
-        with open(path.join(self.backup_path, '.snapshot'), 'wb') as snapshot_file:
+        with open(join(self.backup_path, '.snapshot'), 'wb') as snapshot_file:
             pickle.dump(snapshot, snapshot_file)
 
     def createDirectory(self, path):
@@ -55,7 +58,7 @@ class FSManager():
         os.renames(relpath(src_path, self.dir_path), relpath(dest_path, self.dir_path))
 
     def copyDirectory(self, src_path, dest_path):
-        shutil.copytree(relpath(src_path, self.dir_path), relpath(dest_path, self.dir_path), ignore=lambda _, files: [f for f in files if f != basename(normpath(backup_path))])
+        shutil.copytree(relpath(src_path, self.dir_path), relpath(dest_path, self.dir_path), ignore=lambda *_: [basename(normpath(self.backup_path))])
 
     def deleteFile(self, path):
         os.remove(relpath(path, self.dir_path))
