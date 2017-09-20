@@ -1,5 +1,6 @@
 import os
 import pickle
+import shutil
 
 from os.path import basename, join, normpath, relpath
 from watchdog.utils.dirsnapshot import DirectorySnapshot, DirectorySnapshotDiff
@@ -39,7 +40,8 @@ class FSManager():
 
     def updateLastSyncState(self):
         snapshot = DirectorySnapshot(self.dir_path, listdir=self.listdir)
-        self.createDirectory(self.backup_path)
+        self.deleteDirectory(self.backup_path)
+        self.copyDirectory(self.dir_path, self.backup_path)
         with open(path.join(self.backup_path, '.snapshot'), 'wb') as snapshot_file:
             pickle.dump(snapshot, snapshot_file)
 
@@ -47,10 +49,13 @@ class FSManager():
         os.makedirs(relpath(path, self.dir_path), exist_ok=True)
 
     def deleteDirectory(self, path):
-        os.rmdir(relpath(path, self.dir_path))
+        shutil.rmtree(relpath(path, self.dir_path))
 
     def moveDirectory(self, src_path, dest_path):
         os.renames(relpath(src_path, self.dir_path), relpath(dest_path, self.dir_path))
+
+    def copyDirectory(self, src_path, dest_path):
+        shutil.copytree(relpath(src_path, self.dir_path), relpath(dest_path, self.dir_path), ignore=lambda _, files: [f for f in files if f != basename(normpath(backup_path))])
 
     def deleteFile(self, path):
         os.remove(relpath(path, self.dir_path))
