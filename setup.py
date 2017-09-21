@@ -38,6 +38,8 @@ setup(
         'watchdog'
     ],
 
+    python_requires='>=3',
+
     extras_require={
         'dev': ['check-manifest'],
         'test': ['coverage'],
