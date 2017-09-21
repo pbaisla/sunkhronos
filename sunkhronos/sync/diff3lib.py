@@ -20,6 +20,8 @@ it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2.
 '''
 
+from functools import cmp_to_key
+
 def diff3(text0, text2, text1):
   """Calcurate three-way differences. This returns difference sets.
 
@@ -167,7 +169,7 @@ def diff(a, b):
     freqs[s] = freqs.setdefault(s, 0) + 3
     bp[s] = i
 
-  for (s, x) in freqs.iteritems():
+  for (s, x) in freqs.items():
     if x == 5:
       uniq_pair = (ap[s], bp[s])
       uniqs.append(uniq_pair)
@@ -180,7 +182,7 @@ def diff(a, b):
       return 0
     return +1
 
-  uniqs.sort(cmpf)
+  uniqs.sort(key=cmp_to_key(cmpf))
 
   range2_list = []
 
