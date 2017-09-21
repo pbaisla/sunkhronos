@@ -23,7 +23,7 @@ setup(
     author='Prashant Baisla',
     author_email='prashantbaisla@gmail.com',
 
-    license='Unilicense',
+    license='License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
 
     classifiers=[
         'Development Status :: 3 - Alpha',
