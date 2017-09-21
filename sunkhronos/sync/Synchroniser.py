@@ -2,16 +2,37 @@ class Synchroniser():
     def __init__(self, ownChanges, theirChanges):
         self.ownChanges = ownChanges
         self.theirChanges = theirChanges
+        self.own_moved_src = []
+        self.own_moved_dest = []
+        self.their_moved_src = []
+        self.their_moved_dest = []
+
         self.preprocessChanges()
+        if len(self.theirChanges["files_moved"]):
+            self.their_moved_src, self.their_moved_dest = map(list, zip(*self.theirChanges["files_moved"]))
+        if len(self.ownChanges["files_moved"]):
+            self.own_moved_src, self.own_moved_dest = map(list, zip(*self.ownChanges["files_moved"]))
 
     def preprocessChanges(self):
-        for moved_file_src, _ in self.ownChanges["files_moved"]:
+        ownFilesMoved = []
+        theirFilesMoved = []
+
+        for moved_file_src, moved_file_dest in self.ownChanges["files_moved"]:
             if moved_file_src in self.ownChanges["files_modified"]:
                 self.ownChanges["files_modified"].remove(moved_file_src)
+                self.ownChanges["files_created"].append(moved_file_dest)
+            else:
+                ownFilesMoved.append((moved_file_src, moved_file_dest))
 
-        for moved_file_src, _ in self.theirChanges["files_moved"]:
+        for moved_file_src, moved_file_dest in self.theirChanges["files_moved"]:
             if moved_file_src in self.theirChanges["files_modified"]:
                 self.theirChanges["files_modified"].remove(moved_file_src)
+                self.theirChanges["files_created"].append(moved_file_dest)
+            else:
+                theirFilesMoved.append((moved_file_src, moved_file_dest))
+
+        self.ownChanges["files_moved"] = ownFilesMoved
+        self.theirChanges["files_moved"] = theirFilesMoved
 
     def getActions(self):
         actions = []
@@ -34,22 +55,12 @@ class Synchroniser():
         ownActions = []
         theirActions = []
 
-        if len(self.theirChanges["files_moved"]):
-            their_moved_src, their_moved_dest = map(list, zip(*self.theirChanges["files_moved"]))
-        else:
-            their_moved_src, their_moved_dest = [], []
-
-        if len(self.ownChanges["files_moved"]):
-            own_moved_src, own_moved_dest = map(list, zip(*self.ownChanges["files_moved"]))
-        else:
-            own_moved_src, own_moved_dest = [], []
-
         for deleted_file in self.ownChanges["files_deleted"]:
-            if deleted_file not in (self.theirChanges["files_deleted"] + self.theirChanges["files_modified"] + self.theirChanges["files_created"] + their_moved_src + their_moved_dest):
+            if deleted_file not in (self.theirChanges["files_deleted"] + self.theirChanges["files_modified"] + self.theirChanges["files_created"] + self.their_moved_src + self.their_moved_dest):
                 theirActions.append(('delete', deleted_file))
 
         for deleted_file in self.theirChanges["files_deleted"]:
-            if deleted_file not in (self.ownChanges["files_deleted"] + self.ownChanges["files_modified"] + self.ownChanges["files_created"] + own_moved_src + own_moved_dest):
+            if deleted_file not in (self.ownChanges["files_deleted"] + self.ownChanges["files_modified"] + self.ownChanges["files_created"] + self.own_moved_src + self.own_moved_dest):
                 ownActions.append(('delete', deleted_file))
 
         return (ownActions, theirActions)
@@ -58,13 +69,39 @@ class Synchroniser():
         ownActions = []
         theirActions = []
 
-        for moved_file in self.ownChanges["files_moved"]:
-            if moved_file not in self.theirChanges["files_moved"] and moved_file[0] not in self.theirChanges["files_deleted"] and moved_file[1] not in self.theirChanges["files_created"]:
-                theirActions.append(('move', moved_file))
+        for moved_file_src, moved_file_dest in self.ownChanges["files_moved"]:
+            if moved_file_src in self.theirChanges["files_modified"] and moved_file_dest in self.theirChanges["files_created"]:
+                theirActions.append(('create', moved_file_src))
+                theirActions.append(('create', moved_file_dest))
+            elif moved_file_dest in self.theirChanges["files_created"]:
+                theirActions.append(('delete', moved_file_src))
+                theirActions.append(('create', moved_file_dest))
+            elif moved_file_src in self.theirChanges["files_deleted"]:
+                theirActions.append(('create', moved_file_dest))
+            elif moved_file_src in self.their_moved_src:
+                if (moved_file_src, moved_file_dest) in self.theirChanges["files_moved"]:
+                    pass # No action required
+                else:
+                    theirActions.append(('create', moved_file_dest))
+            else:
+                theirActions.append(('move', (moved_file_src, moved_file_dest)))
 
-        for moved_file in self.theirChanges["files_moved"]:
-            if moved_file not in self.ownChanges["files_moved"] and moved_file[0] not in self.ownChanges["files_deleted"] and moved_file[1] not in self.ownChanges["files_created"]:
-                ownActions.append(('move', moved_file))
+        for moved_file_src, moved_file_dest in self.theirChanges["files_moved"]:
+            if moved_file_src in self.ownChanges["files_modified"] and moved_file_dest in self.ownChanges["files_created"]:
+                ownActions.append(('create', moved_file_src))
+                ownActions.append(('create', moved_file_dest))
+            elif moved_file_dest in self.ownChanges["files_created"]:
+                ownActions.append(('delete', moved_file_src))
+                ownActions.append(('create', moved_file_dest))
+            elif moved_file_src in self.ownChanges["files_deleted"]:
+                ownActions.append(('create', moved_file_dest))
+            elif moved_file_src in self.own_moved_src:
+                if (moved_file_src, moved_file_dest) in self.ownChanges["files_moved"]:
+                    pass # No action required
+                else:
+                    ownActions.append(('create', moved_file_dest))
+            else:
+                ownActions.append(('move', (moved_file_src, moved_file_dest)))
 
         return (ownActions, theirActions)
 
@@ -72,29 +109,33 @@ class Synchroniser():
         ownActions = []
         theirActions = []
 
-        if len(self.theirChanges["files_moved"]):
-            their_moved_src, their_moved_dest = map(list, zip(*self.theirChanges["files_moved"]))
-        else:
-            their_moved_src, their_moved_dest = [], []
-
-        if len(self.ownChanges["files_moved"]):
-            own_moved_src, own_moved_dest = map(list, zip(*self.ownChanges["files_moved"]))
-        else:
-            own_moved_src, own_moved_dest = [], []
-
         for created_file in self.ownChanges["files_created"]:
-            if created_file not in their_moved_dest:
-                theirActions.append(('create', created_file))
+            theirActions.append(('create', created_file))
 
         for created_file in self.theirChanges["files_created"]:
-            if created_file not in own_moved_dest:
-                ownActions.append(('create', created_file))
+            ownActions.append(('create', created_file))
 
         return (ownActions, theirActions)
 
     def getModifyActions(self):
         ownActions = []
         theirActions = []
+
+        for modified_file in self.ownChanges["files_modified"]:
+            if modified_file in self.theirChanges["files_deleted"]:
+                theirActions.append(('create', modified_file))
+            elif modified_file in self.their_moved_src:
+                theirActions.append(('create', modified_file))
+            else:
+                theirActions.append(('modify', modified_file))
+
+        for modified_file in self.theirChanges["files_modified"]:
+            if modified_file in self.ownChanges["files_deleted"]:
+                ownActions.append(('create', modified_file))
+            elif modified_file in self.own_moved_src:
+                ownActions.append(('create', modified_file))
+            else:
+                ownActions.append(('modify', modified_file))
 
         return (ownActions, theirActions)
 
