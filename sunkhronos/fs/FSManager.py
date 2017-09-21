@@ -69,11 +69,17 @@ class FSManager():
 
     def readFile(self, path):
         with open(relpath(path, self.dir_path), 'r') as f:
-            return f.read()
+            return f.readlines()
 
     def writeFile(self, path, contents):
         with open(relpath(path, self.dir_path), 'w') as f:
-            f.write(contents)
+            f.writelines(contents)
+
+    def readBackupFile(self, path):
+        try:
+            return self.readFile(join(self.backup_path, path))
+        except FileNotFoundError:
+            return []
 
     def getFileContents(self, files):
         data = {}
