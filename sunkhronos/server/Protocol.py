@@ -27,6 +27,8 @@ class SyncProtocol(Protocol):
                 response = self.handleChanges(message["changes"])
             elif message["type"] == "data":
                 response = self.handleData(message["data"])
+            elif message["type"] == "end":
+                self.transport.loseConnection()
             else:
                 response = {
                     "type": "error",
@@ -44,18 +46,22 @@ class SyncProtocol(Protocol):
         ownChanges = self.factory.fs_manager.getChangesSinceLastSync()
         self.synchroniser = Synchroniser(ownChanges, theirChanges)
         ownActions, theirActions = self.synchroniser.getActions()
-        ownRequiredFiles = self.synchroniser.getRequiredFiles(ownActions)
-        theirRequiredFiles = self.synchroniser.getRequiredFiles(theirActions)
-        theirRequiredData = self.factory.fs_manager.getFileContents(theirRequiredFiles)
+        self.ownRequiredFiles = self.synchroniser.getRequiredFiles(ownActions)
+        self.theirRequiredFiles = self.synchroniser.getRequiredFiles(theirActions)
         self.actions = ownActions
         response = {
             "type": "actions",
             "actions": theirActions,
-            "files": ownRequiredFiles,
-            "data": theirRequiredData,
+            "files": self.ownRequiredFiles,
         }
         return response
 
     def handleData(self, data):
-        self.data = data
+        ownData, theirData = self.synchroniser.getData(data, self.ownRequiredFiles, self.theirRequiredFiles, self.factory.fs_manager)
+        self.data = ownData
+        response = {
+            "type": "data",
+            "data": theirData,
+        }
+        return response
 

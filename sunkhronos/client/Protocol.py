@@ -31,7 +31,9 @@ class SyncProtocol(Protocol):
         try:
             message = json.loads(data)
             if message["type"] == "actions":
-                response = self.handleActions(message["actions"], message["data"], message["files"])
+                response = self.handleActions(message["actions"], message["files"])
+            elif message["type"] == "data":
+                response = self.handleData(message["data"])
                 self.transport.loseConnection()
             else:
                 response = {
@@ -46,12 +48,19 @@ class SyncProtocol(Protocol):
         finally:
             self.transport.write(json.dumps(response).encode())
 
-    def handleActions(self, actions, data, files):
+    def handleActions(self, actions, files):
         self.actions = actions
-        self.data = data
         theirRequiredData = self.factory.fs_manager.getFileContents(files)
         response = {
             "type": "data",
             "data": theirRequiredData
         }
         return response
+
+    def handleData(self, data):
+        self.data = data
+        response = {
+            "type": "end"
+        }
+        return response
+
