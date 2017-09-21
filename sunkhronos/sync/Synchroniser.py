@@ -1,3 +1,5 @@
+from sunkhronos.sync.merge import merge
+
 class Synchroniser():
     def __init__(self, ownChanges, theirChanges):
         self.ownChanges = ownChanges
@@ -139,19 +141,41 @@ class Synchroniser():
 
         return (ownActions, theirActions)
 
+    def getData(self, theirFilesData, ownRequiredFiles, theirRequiredFiles, fsManager):
+        ownData = theirFilesData
+        theirData = {}
+
+        commonFiles = list(set(ownRequiredFiles) & set(theirRequiredFiles))
+        for filename in commonFiles:
+            ownFileData = fsManager.readFile(filename)
+            originalFileData = fsManager.readBackupFile(filename)
+            theirFileData = theirFilesData[filename]
+            mergedFile = merge(ownFileData, originalFileData, theirFileData)
+            ownData[filename] = mergedFile
+            theirData[filename] = mergedFile
+
+        remainingFiles = list(set(theirRequiredFiles) - set(commonFiles))
+        for filename in remainingFiles:
+            contents = fsManager.readFile(filename)
+            theirData[filename] = contents
+
+        return (ownData, theirData)
+
     def getRequiredFiles(self, actions):
         files = []
         for action in actions:
             if action[0] == 'create':
                 files.append(action[1])
+            elif action[0] == 'modify':
+                files.append(action[1])
             elif action[0] == 'move':
-                files.append(action[1][0])
+                files.append(action[1][1])
         return files
 
     @staticmethod
     def synchronise(actions, data, fsManager):
         for action in actions:
-            if action[0] == 'create':
+            if action[0] == 'create' or action[0] == 'modify':
                 fsManager.writeFile(action[1], data[action[1]])
             elif action[0] == 'delete':
                 fsManager.deleteFile(action[1])
