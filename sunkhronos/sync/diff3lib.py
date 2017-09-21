@@ -22,6 +22,7 @@ the Free Software Foundation; either version 2.
 
 from functools import cmp_to_key
 
+
 def diff3(text0, text2, text1):
   """Calcurate three-way differences. This returns difference sets.
 
@@ -131,6 +132,7 @@ def diff3(text0, text2, text1):
 
   return range3_list
 
+
 def diff(a, b):
   """The two-way diff based on the algorithm by P. Heckel.
 
@@ -210,4 +212,3 @@ def diff(a, b):
     b1 = b_uniq + 1
 
   return range2_list
-

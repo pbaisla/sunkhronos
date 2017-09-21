@@ -89,4 +89,3 @@ class FSManager():
             except FileNotFoundError:
                 data[filename] = self.readBackupFile(filename)
         return data
-

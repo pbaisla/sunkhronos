@@ -1,6 +1,7 @@
 from unittest import TestCase
 from sunkhronos.sync.Synchroniser import Synchroniser
 
+
 class SynchroniserTestCase(TestCase):
 
     def test_file_deleted_on_own_device(self):
@@ -85,6 +86,7 @@ class SynchroniserTestCase(TestCase):
         expectedOwnActions = []
         expectedTheirActions = []
         self.assertCountEqual(ownActions, expectedOwnActions)
+        self.assertCountEqual(theirActions, expectedTheirActions)
 
     def test_file_created_on_own_device(self):
         ownChanges = {
@@ -675,4 +677,3 @@ class SynchroniserTestCase(TestCase):
         expectedTheirActions = [("create", "moved_file_dest_own")]
         self.assertCountEqual(ownActions, expectedOwnActions)
         self.assertCountEqual(theirActions, expectedTheirActions)
-

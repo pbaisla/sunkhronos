@@ -2,6 +2,7 @@
 
 from sunkhronos.sync.diff3lib import diff, diff3
 
+
 def merge(yourtext, origtext, theirtext):
     body = []
     d3 = diff3(yourtext, origtext, theirtext)
@@ -23,11 +24,12 @@ def merge(yourtext, origtext, theirtext):
         body.append(text3[2][lineno - 1])
     return body
 
+
 def _conflict_range(text3, r3, body):
-    text_a = [] # their text
+    text_a = []  # their text
     for i in range(r3[3], r3[4] + 1):
         text_a.append(text3[1][i - 1])
-    text_b = [] # your text
+    text_b = []  # your text
     for i in range(r3[1], r3[2] + 1):
         text_b.append(text3[0][i - 1])
     d = diff(text_a, text_b)
@@ -56,8 +58,9 @@ def _conflict_range(text3, r3, body):
         body.append(text_a[lineno - 1])
     return body
 
+
 def _assoc_range(diff, diff_type):
     for d in diff:
-        if d[0] == diff_type: return d
+        if d[0] == diff_type:
+            return d
     return None
-

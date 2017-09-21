@@ -1,5 +1,6 @@
 from sunkhronos.sync.merge import merge
 
+
 class Synchroniser():
     def __init__(self, ownChanges, theirChanges):
         self.ownChanges = ownChanges
@@ -82,7 +83,7 @@ class Synchroniser():
                 theirActions.append(('create', moved_file_dest))
             elif moved_file_src in self.their_moved_src:
                 if (moved_file_src, moved_file_dest) in self.theirChanges["files_moved"]:
-                    pass # No action required
+                    pass  # No action required
                 else:
                     theirActions.append(('create', moved_file_dest))
             else:
@@ -99,7 +100,7 @@ class Synchroniser():
                 ownActions.append(('create', moved_file_dest))
             elif moved_file_src in self.own_moved_src:
                 if (moved_file_src, moved_file_dest) in self.ownChanges["files_moved"]:
-                    pass # No action required
+                    pass  # No action required
                 else:
                     ownActions.append(('create', moved_file_dest))
             else:
@@ -181,4 +182,3 @@ class Synchroniser():
                 fsManager.deleteFile(action[1])
             elif action[0] == 'move':
                 fsManager.moveFile(action[1][0], action[1][1])
-

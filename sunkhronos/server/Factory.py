@@ -1,6 +1,7 @@
 from sunkhronos.server.Protocol import SyncProtocol
 from twisted.internet.protocol import Factory
 
+
 class SyncFactory(Factory):
 
     def __init__(self, fs_manager):
@@ -8,4 +9,3 @@ class SyncFactory(Factory):
 
     def buildProtocol(self, addr):
         return SyncProtocol(self)
-

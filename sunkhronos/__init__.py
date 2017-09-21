@@ -1,20 +1,22 @@
+import argparse
+
 from sunkhronos.client.Factory import SyncFactory as ClientFactory
 from sunkhronos.server.Factory import SyncFactory as ServerFactory
 from sunkhronos.fs.FSManager import FSManager
-from sunkhronos.sync.Synchroniser import Synchroniser
 from twisted.internet import reactor
 
-import argparse
 
 def connect(args):
     fs_manager = FSManager(args.directory, args.backup_directory)
     reactor.connectTCP(args.host, args.port, ClientFactory(fs_manager))
     reactor.run()
 
+
 def serve(args):
     fs_manager = FSManager(args.directory, args.backup_directory)
     reactor.listenTCP(args.port, ServerFactory(fs_manager))
     reactor.run()
+
 
 def main():
     parser = argparse.ArgumentParser(description='Keep two folders on different devices in sync')
@@ -40,6 +42,6 @@ def main():
     else:
         parser.error('A subcommand (one of {connect, serve}) is required')
 
+
 if __name__ == '__main__':
     main()
-

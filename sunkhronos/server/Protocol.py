@@ -1,9 +1,9 @@
-from sunkhronos.fs.FSManager import FSManager
+import json
+
 from sunkhronos.sync.Synchroniser import Synchroniser
 from twisted.internet.error import ConnectionDone
 from twisted.internet.protocol import Protocol
 
-import json
 
 class SyncProtocol(Protocol):
     def __init__(self, factory):
@@ -64,4 +64,3 @@ class SyncProtocol(Protocol):
             "data": theirData,
         }
         return response
-
