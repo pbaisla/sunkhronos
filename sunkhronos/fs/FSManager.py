@@ -84,6 +84,9 @@ class FSManager():
     def getFileContents(self, files):
         data = {}
         for filename in files:
-            data[filename] = self.readFile(filename)
+            try:
+                data[filename] = self.readFile(filename)
+            except FileNotFoundError:
+                data[filename] = self.readBackupFile(filename)
         return data
 
