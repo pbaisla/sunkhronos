@@ -6,14 +6,11 @@ class Synchroniser():
     def getActions(self):
         actions = []
         actions.append(self.getFileDeleteActions())
-        actions.append(self.getDirectoryMoveActions())
-        actions.append(self.getDirectoryCreateActions())
         actions.append(self.getFileMoveActions())
-        actions.append(self.getDirectoryDeleteActions())
         actions.append(self.getFileCreateActions())
         actions.append(self.getModifyActions())
         if len(actions):
-            ownActions, theirActions = zip(*actions)
+            ownActions, theirActions = map(list, zip(*actions))
         else:
             ownActions, theirActions = [], []
         flattenedOwnActions = [action for ownActionList in ownActions for action in ownActionList]
@@ -24,11 +21,11 @@ class Synchroniser():
         ownActions = []
         theirActions = []
         if len(self.theirChanges["files_moved"]):
-            their_moved_src, their_moved_dest = zip(*self.theirChanges["files_moved"])
+            their_moved_src, their_moved_dest = map(list, zip(*self.theirChanges["files_moved"]))
         else:
             their_moved_src, their_moved_dest = [], []
         if len(self.ownChanges["files_moved"]):
-            own_moved_src, own_moved_dest = zip(*self.ownChanges["files_moved"])
+            own_moved_src, own_moved_dest = map(list, zip(*self.ownChanges["files_moved"]))
         else:
             own_moved_src, own_moved_dest = [], []
         for deleted_file in self.ownChanges["files_deleted"]:
@@ -37,36 +34,6 @@ class Synchroniser():
         for deleted_file in self.theirChanges["files_deleted"]:
             if deleted_file not in (self.ownChanges["files_deleted"] + self.ownChanges["files_modified"] + self.ownChanges["files_created"] + own_moved_src + own_moved_dest):
                 ownActions.append(('delete', deleted_file))
-        return (ownActions, theirActions)
-
-    def getDirectoryMoveActions(self):
-        ownActions = []
-        theirActions = []
-        for moved_dir in self.ownChanges["dirs_moved"]:
-            if moved_dir not in self.theirChanges["dirs_moved"] and moved_dir[0] not in self.theirChanges["dirs_deleted"] and moved_dir[1] not in self.theirChanges["dirs_created"]:
-                theirActions.append(('move_dir', moved_dir))
-        for moved_dir in self.theirChanges["dirs_moved"]:
-            if moved_dir not in self.ownChanges["dirs_moved"] and moved_dir[0] not in self.ownChanges["dirs_deleted"] and moved_dir[1] not in self.ownChanges["dirs_created"]:
-                ownActions.append(('move_dir', moved_dir))
-        return (ownActions, theirActions)
-
-    def getDirectoryCreateActions(self):
-        ownActions = []
-        theirActions = []
-        if len(self.theirChanges["dirs_moved"]):
-            their_moved_src, their_moved_dest = zip(*self.theirChanges["dirs_moved"])
-        else:
-            their_moved_src, their_moved_dest = [], []
-        if len(self.ownChanges["dirs_moved"]):
-            own_moved_src, own_moved_dest = zip(*self.ownChanges["dirs_moved"])
-        else:
-            own_moved_src, own_moved_dest = [], []
-        for created_dir in self.ownChanges["dirs_created"]:
-            if created_dir not in (self.theirChanges["dirs_created"] + their_moved_dest):
-                theirActions.append(('create_dir', created_dir))
-        for created_dir in self.theirChanges["dirs_created"]:
-            if created_dir not in (self.ownChanges["dirs_created"] + own_moved_dest):
-                ownActions.append(('create_dir', created_dir))
         return (ownActions, theirActions)
 
     def getFileMoveActions(self):
@@ -80,34 +47,15 @@ class Synchroniser():
                 ownActions.append(('move', moved_file))
         return (ownActions, theirActions)
 
-    def getDirectoryDeleteActions(self):
-        ownActions = []
-        theirActions = []
-        if len(self.theirChanges["dirs_moved"]):
-            their_moved_src, their_moved_dest = zip(*self.theirChanges["dirs_moved"])
-        else:
-            their_moved_src, their_moved_dest = [], []
-        if len(self.ownChanges["dirs_moved"]):
-            own_moved_src, own_moved_dest = zip(*self.ownChanges["dirs_moved"])
-        else:
-            own_moved_src, own_moved_dest = [], []
-        for deleted_dir in self.ownChanges["dirs_deleted"]:
-            if deleted_dir not in (self.theirChanges["dirs_deleted"] + self.theirChanges["dirs_modified"] + self.theirChanges["dirs_created"] + their_moved_src + their_moved_dest):
-                theirActions.append(('delete_dir', deleted_dir))
-        for deleted_dir in self.theirChanges["dirs_deleted"]:
-            if deleted_dir not in (self.ownChanges["dirs_deleted"] + self.ownChanges["dirs_modified"] + self.ownChanges["dirs_created"] + own_moved_src + own_moved_dest):
-                ownActions.append(('delete_dir', deleted_dir))
-        return (ownActions, theirActions)
-
     def getFileCreateActions(self):
         ownActions = []
         theirActions = []
         if len(self.theirChanges["files_moved"]):
-            their_moved_src, their_moved_dest = zip(*self.theirChanges["files_moved"])
+            their_moved_src, their_moved_dest = map(list, zip(*self.theirChanges["files_moved"]))
         else:
             their_moved_src, their_moved_dest = [], []
         if len(self.ownChanges["files_moved"]):
-            own_moved_src, own_moved_dest = zip(*self.ownChanges["files_moved"])
+            own_moved_src, own_moved_dest = map(list, zip(*self.ownChanges["files_moved"]))
         else:
             own_moved_src, own_moved_dest = [], []
         for created_file in self.ownChanges["files_created"]:
@@ -139,10 +87,4 @@ class Synchroniser():
                 fsManager.deleteFile(action[1])
             elif action[0] == 'move':
                 fsManager.moveFile(action[1][0], action[1][1])
-            elif action[0] == 'create_dir':
-                fsManager.createDirectory(action[1])
-            elif action[0] == 'delete_dir':
-                fsManager.deleteDirectory(action[1])
-            elif action[0] == 'move_dir':
-                fsManager.moveDirectory(action[1][0], action[1][1])
 

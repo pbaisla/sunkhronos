@@ -86,90 +86,6 @@ class SynchroniserTestCase(TestCase):
         expectedTheirActions = []
         self.assertCountEqual(ownActions, expectedOwnActions)
 
-    def test_dir_deleted_on_own_device(self):
-        ownChanges = {
-            "dirs_created": [],
-            "dirs_deleted": ["deleted_dir"],
-            "dirs_modified": [],
-            "dirs_moved": [],
-            "files_created": [],
-            "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
-        }
-        theirChanges = {
-            "dirs_created": [],
-            "dirs_deleted": [],
-            "dirs_modified": [],
-            "dirs_moved": [],
-            "files_created": [],
-            "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
-        }
-        synchroniser = Synchroniser(ownChanges, theirChanges)
-        ownActions, theirActions = synchroniser.getActions()
-        expectedOwnActions = []
-        expectedTheirActions = [("delete_dir", "deleted_dir")]
-        self.assertCountEqual(ownActions, expectedOwnActions)
-        self.assertCountEqual(theirActions, expectedTheirActions)
-
-    def test_dir_deleted_on_their_device(self):
-        ownChanges = {
-            "dirs_created": [],
-            "dirs_deleted": [],
-            "dirs_modified": [],
-            "dirs_moved": [],
-            "files_created": [],
-            "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
-        }
-        theirChanges = {
-            "dirs_created": [],
-            "dirs_deleted": ["deleted_dir"],
-            "dirs_modified": [],
-            "dirs_moved": [],
-            "files_created": [],
-            "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
-        }
-        synchroniser = Synchroniser(ownChanges, theirChanges)
-        ownActions, theirActions = synchroniser.getActions()
-        expectedOwnActions = [("delete_dir", "deleted_dir")]
-        expectedTheirActions = []
-        self.assertCountEqual(ownActions, expectedOwnActions)
-        self.assertCountEqual(theirActions, expectedTheirActions)
-
-    def test_dir_deleted_on_both_devices(self):
-        ownChanges = {
-            "dirs_created": [],
-            "dirs_deleted": ["deleted_dir"],
-            "dirs_modified": [],
-            "dirs_moved": [],
-            "files_created": [],
-            "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
-        }
-        theirChanges = {
-            "dirs_created": [],
-            "dirs_deleted": ["deleted_dir"],
-            "dirs_modified": [],
-            "dirs_moved": [],
-            "files_created": [],
-            "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
-        }
-        synchroniser = Synchroniser(ownChanges, theirChanges)
-        ownActions, theirActions = synchroniser.getActions()
-        expectedOwnActions = []
-        expectedTheirActions = []
-        self.assertCountEqual(ownActions, expectedOwnActions)
-        self.assertCountEqual(theirActions, expectedTheirActions)
-
     def test_file_created_on_own_device(self):
         ownChanges = {
             "dirs_created": [],
@@ -254,90 +170,6 @@ class SynchroniserTestCase(TestCase):
         self.assertCountEqual(ownActions, expectedOwnActions)
         self.assertCountEqual(theirActions, expectedTheirActions)
 
-    def test_dir_created_on_own_device(self):
-        ownChanges = {
-            "dirs_created": ["created_dir"],
-            "dirs_deleted": [],
-            "dirs_modified": [],
-            "dirs_moved": [],
-            "files_created": [],
-            "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
-        }
-        theirChanges = {
-            "dirs_created": [],
-            "dirs_deleted": [],
-            "dirs_modified": [],
-            "dirs_moved": [],
-            "files_created": [],
-            "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
-        }
-        synchroniser = Synchroniser(ownChanges, theirChanges)
-        ownActions, theirActions = synchroniser.getActions()
-        expectedOwnActions = []
-        expectedTheirActions = [("create_dir", "created_dir")]
-        self.assertCountEqual(ownActions, expectedOwnActions)
-        self.assertCountEqual(theirActions, expectedTheirActions)
-
-    def test_dir_created_on_their_device(self):
-        ownChanges = {
-            "dirs_created": [],
-            "dirs_deleted": [],
-            "dirs_modified": [],
-            "dirs_moved": [],
-            "files_created": [],
-            "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
-        }
-        theirChanges = {
-            "dirs_created": ["created_dir"],
-            "dirs_deleted": [],
-            "dirs_modified": [],
-            "dirs_moved": [],
-            "files_created": [],
-            "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
-        }
-        synchroniser = Synchroniser(ownChanges, theirChanges)
-        ownActions, theirActions = synchroniser.getActions()
-        expectedOwnActions = [("create_dir", "created_dir")]
-        expectedTheirActions = []
-        self.assertCountEqual(ownActions, expectedOwnActions)
-        self.assertCountEqual(theirActions, expectedTheirActions)
-
-    def test_dir_created_on_both_devices(self):
-        ownChanges = {
-            "dirs_created": ["created_dir"],
-            "dirs_deleted": [],
-            "dirs_modified": [],
-            "dirs_moved": [],
-            "files_created": [],
-            "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
-        }
-        theirChanges = {
-            "dirs_created": ["created_dir"],
-            "dirs_deleted": [],
-            "dirs_modified": [],
-            "dirs_moved": [],
-            "files_created": [],
-            "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
-        }
-        synchroniser = Synchroniser(ownChanges, theirChanges)
-        ownActions, theirActions = synchroniser.getActions()
-        expectedOwnActions = [("create_dir", "created_dir")]
-        expectedTheirActions = [("create_dir", "created_dir")]
-        self.assertCountEqual(ownActions, expectedOwnActions)
-        self.assertCountEqual(theirActions, expectedTheirActions)
-
     def test_file_modified_on_own_device(self):
         ownChanges = {
             "dirs_created": [],
@@ -419,90 +251,6 @@ class SynchroniserTestCase(TestCase):
         ownActions, theirActions = synchroniser.getActions()
         expectedOwnActions = [("modify", "modified_file")]
         expectedTheirActions = [("modify", "modified_file")]
-        self.assertCountEqual(ownActions, expectedOwnActions)
-        self.assertCountEqual(theirActions, expectedTheirActions)
-
-    def test_dir_modified_on_own_device(self):
-        ownChanges = {
-            "dirs_created": [],
-            "dirs_deleted": [],
-            "dirs_modified": ["modified_dir"],
-            "dirs_moved": [],
-            "files_created": [],
-            "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
-        }
-        theirChanges = {
-            "dirs_created": [],
-            "dirs_deleted": [],
-            "dirs_modified": [],
-            "dirs_moved": [],
-            "files_created": [],
-            "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
-        }
-        synchroniser = Synchroniser(ownChanges, theirChanges)
-        ownActions, theirActions = synchroniser.getActions()
-        expectedOwnActions = []
-        expectedTheirActions = []
-        self.assertCountEqual(ownActions, expectedOwnActions)
-        self.assertCountEqual(theirActions, expectedTheirActions)
-
-    def test_dir_modified_on_their_device(self):
-        ownChanges = {
-            "dirs_created": [],
-            "dirs_deleted": [],
-            "dirs_modified": [],
-            "dirs_moved": [],
-            "files_created": [],
-            "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
-        }
-        theirChanges = {
-            "dirs_created": [],
-            "dirs_deleted": [],
-            "dirs_modified": ["modified_dir"],
-            "dirs_moved": [],
-            "files_created": [],
-            "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
-        }
-        synchroniser = Synchroniser(ownChanges, theirChanges)
-        ownActions, theirActions = synchroniser.getActions()
-        expectedOwnActions = []
-        expectedTheirActions = []
-        self.assertCountEqual(ownActions, expectedOwnActions)
-        self.assertCountEqual(theirActions, expectedTheirActions)
-
-    def test_dir_modified_on_both_devices(self):
-        ownChanges = {
-            "dirs_created": [],
-            "dirs_deleted": [],
-            "dirs_modified": ["modified_file"],
-            "dirs_moved": [],
-            "files_created": [],
-            "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
-        }
-        theirChanges = {
-            "dirs_created": [],
-            "dirs_deleted": [],
-            "dirs_modified": ["modified_file"],
-            "dirs_moved": [],
-            "files_created": [],
-            "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
-        }
-        synchroniser = Synchroniser(ownChanges, theirChanges)
-        ownActions, theirActions = synchroniser.getActions()
-        expectedOwnActions = []
-        expectedTheirActions = []
         self.assertCountEqual(ownActions, expectedOwnActions)
         self.assertCountEqual(theirActions, expectedTheirActions)
 
@@ -618,16 +366,128 @@ class SynchroniserTestCase(TestCase):
         self.assertCountEqual(ownActions, expectedOwnActions)
         self.assertCountEqual(theirActions, expectedTheirActions)
 
-    def test_dir_moved_on_own_device(self):
+    def test_file_deleted_on_own_device_but_modified_on_their_device(self):
         ownChanges = {
             "dirs_created": [],
             "dirs_deleted": [],
             "dirs_modified": [],
-            "dirs_moved": [("moved_dir_src", "moved_dir_dest")],
+            "dirs_moved": [],
+            "files_created": [],
+            "files_deleted": ["modified_file"],
+            "files_modified": [],
+            "files_moved": [],
+        }
+        theirChanges = {
+            "dirs_created": [],
+            "dirs_deleted": [],
+            "dirs_modified": [],
+            "dirs_moved": [],
+            "files_created": [],
+            "files_deleted": [],
+            "files_modified": ["modified_file"],
+            "files_moved": [],
+        }
+        synchroniser = Synchroniser(ownChanges, theirChanges)
+        ownActions, theirActions = synchroniser.getActions()
+        expectedOwnActions = [("create", "modified_file")]
+        expectedTheirActions = []
+        self.assertCountEqual(ownActions, expectedOwnActions)
+        self.assertCountEqual(theirActions, expectedTheirActions)
+
+    def test_file_deleted_on_their_device_but_modified_on_own_device(self):
+        ownChanges = {
+            "dirs_created": [],
+            "dirs_deleted": [],
+            "dirs_modified": [],
+            "dirs_moved": [],
+            "files_created": [],
+            "files_deleted": [],
+            "files_modified": ["modified_file"],
+            "files_moved": [],
+        }
+        theirChanges = {
+            "dirs_created": [],
+            "dirs_deleted": [],
+            "dirs_modified": [],
+            "dirs_moved": [],
+            "files_created": [],
+            "files_deleted": ["modified_file"],
+            "files_modified": [],
+            "files_moved": [],
+        }
+        synchroniser = Synchroniser(ownChanges, theirChanges)
+        ownActions, theirActions = synchroniser.getActions()
+        expectedOwnActions = []
+        expectedTheirActions = [("create", "modified_file")]
+        self.assertCountEqual(ownActions, expectedOwnActions)
+        self.assertCountEqual(theirActions, expectedTheirActions)
+
+    def test_file_deleted_on_own_device_but_moved_on_their_device(self):
+        ownChanges = {
+            "dirs_created": [],
+            "dirs_deleted": [],
+            "dirs_modified": [],
+            "dirs_moved": [],
+            "files_created": [],
+            "files_deleted": ["moved_file_src"],
+            "files_modified": [],
+            "files_moved": [],
+        }
+        theirChanges = {
+            "dirs_created": [],
+            "dirs_deleted": [],
+            "dirs_modified": [],
+            "dirs_moved": [],
             "files_created": [],
             "files_deleted": [],
             "files_modified": [],
+            "files_moved": [("moved_file_src", "moved_file_dest")],
+        }
+        synchroniser = Synchroniser(ownChanges, theirChanges)
+        ownActions, theirActions = synchroniser.getActions()
+        expectedOwnActions = [("create", "moved_file_dest")]
+        expectedTheirActions = []
+        self.assertCountEqual(ownActions, expectedOwnActions)
+        self.assertCountEqual(theirActions, expectedTheirActions)
+
+    def test_file_deleted_on_their_device_but_moved_on_own_device(self):
+        ownChanges = {
+            "dirs_created": [],
+            "dirs_deleted": [],
+            "dirs_modified": [],
+            "dirs_moved": [],
+            "files_created": [],
+            "files_deleted": [],
+            "files_modified": [],
+            "files_moved": [("moved_file_src", "moved_file_dest")],
+        }
+        theirChanges = {
+            "dirs_created": [],
+            "dirs_deleted": [],
+            "dirs_modified": [],
+            "dirs_moved": [],
+            "files_created": [],
+            "files_deleted": ["moved_file_src"],
+            "files_modified": [],
             "files_moved": [],
+        }
+        synchroniser = Synchroniser(ownChanges, theirChanges)
+        ownActions, theirActions = synchroniser.getActions()
+        expectedOwnActions = []
+        expectedTheirActions = [("create", "moved_file_dest")]
+        self.assertCountEqual(ownActions, expectedOwnActions)
+        self.assertCountEqual(theirActions, expectedTheirActions)
+
+    def test_file_modified_and_moved_on_own_device(self):
+        ownChanges = {
+            "dirs_created": [],
+            "dirs_deleted": [],
+            "dirs_modified": [],
+            "dirs_moved": [],
+            "files_created": [],
+            "files_deleted": [],
+            "files_modified": ["moved_file_src"],
+            "files_moved": [("moved_file_src", "moved_file_dest")],
         }
         theirChanges = {
             "dirs_created": [],
@@ -642,11 +502,13 @@ class SynchroniserTestCase(TestCase):
         synchroniser = Synchroniser(ownChanges, theirChanges)
         ownActions, theirActions = synchroniser.getActions()
         expectedOwnActions = []
-        expectedTheirActions = [("move_dir", ("moved_dir_src", "moved_dir_dest"))]
+        expectedTheirActions = [("create", "moved_file_dest")]
         self.assertCountEqual(ownActions, expectedOwnActions)
         self.assertCountEqual(theirActions, expectedTheirActions)
 
-    def test_dir_moved_on_their_device(self):
+        pass
+
+    def test_file_modified_and_moved_on_their_device(self):
         ownChanges = {
             "dirs_created": [],
             "dirs_deleted": [],
@@ -661,72 +523,44 @@ class SynchroniserTestCase(TestCase):
             "dirs_created": [],
             "dirs_deleted": [],
             "dirs_modified": [],
-            "dirs_moved": [("moved_dir_src", "moved_dir_dest")],
+            "dirs_moved": [],
             "files_created": [],
             "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
+            "files_modified": ["moved_file_src"],
+            "files_moved": [("moved_file_src", "moved_file_dest")],
         }
         synchroniser = Synchroniser(ownChanges, theirChanges)
         ownActions, theirActions = synchroniser.getActions()
-        expectedOwnActions = [("move_dir", ("moved_dir_src", "moved_dir_dest"))]
+        expectedOwnActions = [("create", "moved_file_dest")]
         expectedTheirActions = []
         self.assertCountEqual(ownActions, expectedOwnActions)
         self.assertCountEqual(theirActions, expectedTheirActions)
 
-    def test_dir_moved_on_both_devices_to_same_destination(self):
+    def test_file_modified_and_moved_on_both_devices(self):
         ownChanges = {
             "dirs_created": [],
             "dirs_deleted": [],
             "dirs_modified": [],
-            "dirs_moved": [("moved_dir_src", "moved_dir_dest")],
+            "dirs_moved": [],
             "files_created": [],
             "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
+            "files_modified": ["moved_file_src"],
+            "files_moved": [("moved_file_src", "moved_file_dest_own")],
         }
         theirChanges = {
             "dirs_created": [],
             "dirs_deleted": [],
             "dirs_modified": [],
-            "dirs_moved": [("moved_dir_src", "moved_dir_dest")],
+            "dirs_moved": [],
             "files_created": [],
             "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
+            "files_modified": ["moved_file_src"],
+            "files_moved": [("moved_file_src", "moved_file_dest_their")],
         }
         synchroniser = Synchroniser(ownChanges, theirChanges)
         ownActions, theirActions = synchroniser.getActions()
-        expectedOwnActions = []
-        expectedTheirActions = []
-        self.assertCountEqual(ownActions, expectedOwnActions)
-        self.assertCountEqual(theirActions, expectedTheirActions)
-
-    def test_dir_moved_on_both_devices_to_different_destinations(self):
-        ownChanges = {
-            "dirs_created": [],
-            "dirs_deleted": [],
-            "dirs_modified": [],
-            "dirs_moved": [("moved_dir_src", "moved_dir_dest_own")],
-            "files_created": [],
-            "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
-        }
-        theirChanges = {
-            "dirs_created": [],
-            "dirs_deleted": [],
-            "dirs_modified": [],
-            "dirs_moved": [("moved_dir_src", "moved_dir_dest_their")],
-            "files_created": [],
-            "files_deleted": [],
-            "files_modified": [],
-            "files_moved": [],
-        }
-        synchroniser = Synchroniser(ownChanges, theirChanges)
-        ownActions, theirActions = synchroniser.getActions()
-        expectedOwnActions = [("copy_dir", ("moved_dir_src", "moved_dir_dest_their"))]
-        expectedTheirActions = [("copy_dir", ("moved_dir_src", "moved_dir_dest_own"))]
+        expectedOwnActions = [("create", "moved_file_dest_their")]
+        expectedTheirActions = [("create", "moved_file_dest_own")]
         self.assertCountEqual(ownActions, expectedOwnActions)
         self.assertCountEqual(theirActions, expectedTheirActions)
 
