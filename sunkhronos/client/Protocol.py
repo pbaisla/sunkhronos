@@ -1,8 +1,10 @@
+import json
+
 from sunkhronos.sync.Synchroniser import Synchroniser
 from twisted.internet.error import ConnectionDone
+from twisted.internet import reactor
 from twisted.internet.protocol import Protocol
 
-import json
 
 class SyncProtocol(Protocol):
     def __init__(self, factory):
@@ -22,6 +24,7 @@ class SyncProtocol(Protocol):
         if reason.check(ConnectionDone):
             Synchroniser.synchronise(self.actions, self.data, self.factory.fs_manager)
             self.factory.fs_manager.updateLastSyncState()
+            reactor.stop()
 
     def dataReceived(self, data):
         response = {
@@ -63,4 +66,3 @@ class SyncProtocol(Protocol):
             "type": "end"
         }
         return response
-
