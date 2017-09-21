@@ -32,7 +32,7 @@ class SyncProtocol(Protocol):
             "message": "Unknown error"
         }
         try:
-            message = json.loads(data)
+            message = json.loads(data.decode())
             if message["type"] == "actions":
                 response = self.handleActions(message["actions"], message["files"])
             elif message["type"] == "data":

@@ -22,7 +22,7 @@ class SyncProtocol(Protocol):
             "message": "Unknown error"
         }
         try:
-            message = json.loads(data)
+            message = json.loads(data.decode())
             if message["type"] == "changes":
                 response = self.handleChanges(message["changes"])
             elif message["type"] == "data":
