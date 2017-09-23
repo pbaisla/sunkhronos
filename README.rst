@@ -17,7 +17,7 @@ Sunkhronos can be run with the ``sunkhronos`` command. This command comes with t
 
 .. code-block:: bash
 
-    sunkhronos code --host 172.31.85.100 --port 8123 --directory . --backup-directory ./.sunkhronos-backup
+    sunkhronos connect --host 172.31.85.100 --port 8123 --directory . --backup-directory ./.sunkhronos-backup
 
 Please see the help information for these commands by typing:
 
